@@ -17,13 +17,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Reflection;
-using System.Runtime.Remoting;
-using System.Security;
-using System.Security.Permissions;
+using System.Linq;
 
-#if ! DOTNETCORE
+#if !DOTNETCORE
 [assembly: AssemblyDescription("Protect your .NET software copyright powerfull.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("DCSoft")]
@@ -567,6 +564,7 @@ namespace JIEJIE
         {
             get
             {
+                return false;
                 return this.GetType() == typeof(MyConsole);
             }
         }
@@ -1982,9 +1980,9 @@ namespace JIEJIE
                         MyConsole.Instance.WriteLine("can not find file : " + pathNgen);
                     }
 #else
-                    MyConsole.Instance.WriteLine("Testing by crossgen.exe...");
-                    CrossGenHelper hp = new CrossGenHelper();
-                    hp.TestByCrossGen(this.Document, asmTempFileName);
+                    //MyConsole.Instance.WriteLine("Testing by crossgen.exe...");
+                    //CrossGenHelper hp = new CrossGenHelper();
+                    //hp.TestByCrossGen(this.Document, asmTempFileName);
                     //Console.WriteLine(".NET Core not support ngen.exe");
 #endif
                 }
@@ -2459,11 +2457,14 @@ namespace JIEJIE
             }
             // 加密内嵌程序集资源
             this.EncryptEmbeddedResource(allMethods);
+
             if (this.Switchs.ControlFlow)
             {
                 // 加密部分字符数值
                 this.EncryptCharValue(allMethods);
             }
+            else
+                Console.WriteLine($".Switchs.ControlFlow false");
             // 加密数组定义
             this.Encrypt_ArrayDefine(allMethods);
             // 加密 lock()/using() 结构。
@@ -2471,6 +2472,12 @@ namespace JIEJIE
             var clses = new List<DCILClass>(this.Document.Classes);
             foreach (var cls in clses)
             {
+                if (cls.Name.Contains("jiejie"))
+                {
+                    Console.WriteLine("Already protected");
+                    Environment.Exit(0);
+                }
+
                 HandleClass(cls);
             }
             if (this.Switchs.ControlFlow)
@@ -4057,6 +4064,24 @@ namespace JIEJIE
             var allClasses = GetAllClasses();
             foreach (var cls in allClasses)
             {
+                if (cls.Name.EndsWith(".JIEJIEHelper"))
+                {
+                    Console.WriteLine("Already protected");
+                    Environment.Exit(0);
+                }    
+                if (!cls.HasCustomAttributes || (cls.HasCustomAttributes && cls.CustomAttributes.All(a => !a.TypeName.EndsWith(".ESCO"))))
+                {
+                    cls.RenameState = DCILRenameState.Preserve;
+                    foreach (var item in cls.ChildNodes)
+                    {
+                        if (item is DCILMemberInfo)
+                        {
+                            ((DCILMemberInfo)item).RenameState = DCILRenameState.Preserve;
+                        }
+                    }
+                    continue;
+                }
+
                 if (cls.IsImport)
                 {
                     foreach (var item in cls.ChildNodes)
@@ -4134,6 +4159,10 @@ namespace JIEJIE
                         }
                     }
                 }
+
+                if (cls.RenameState == DCILRenameState.Preserve)
+                    continue;
+
                 if(ignoreClass )
                 {
                     // 遇到忽略的类型
@@ -8773,7 +8802,7 @@ namespace JIEJIE
             MyConsole.Instance.Write("Obfuscate control flow ...");
             int methodCount = 0;
             int tick = Environment.TickCount;
-            var methods = this.Document.GetAllMethodHasOperCodes();
+            var methods = this.Document.GetAllMethodHasOperCodes(true);
             if(methods != null && methods.Count > 0 )
             {
                 foreach(var method in methods )
@@ -12940,21 +12969,24 @@ namespace JIEJIE
         /// 获得所有包含运行指令的方法对象
         /// </summary>
         /// <returns></returns>
-        public List<DCILMethod> GetAllMethodHasOperCodes()
+        public List<DCILMethod> GetAllMethodHasOperCodes(bool excludeCFA = false)
         {
             var list = new List<DCILMethod>();
             foreach( var cls in this.Classes )
             {
-                InnerGetAllMethodHasOperCodes(cls, list);
+                InnerGetAllMethodHasOperCodes(cls, list, excludeCFA);
             }
             return list;
         }
-        private void InnerGetAllMethodHasOperCodes(DCILClass cls, List<DCILMethod> list)
+        private void InnerGetAllMethodHasOperCodes(DCILClass cls, List<DCILMethod> list, bool excludeCFA)
         {
             if (cls.IsImport == false && cls.IsInterface == false)
             {
                 foreach (var item in cls.ChildNodes)
                 {
+                    if (excludeCFA && item.HasCustomAttributes && item.CustomAttributes.Any(a => a.TypeName.EndsWith(".SCFO")))
+                        continue;
+
                     if (item is DCILMethod)
                     {
                         var m = (DCILMethod)item;
@@ -18715,21 +18747,21 @@ namespace JIEJIE
         internal void RemoveObfuscationAttribute()
         {
             //return;
-            if (this.ObfuscationSettings != null)
-            {
-                this.ObfuscationSettings = null;
+            //if (this.ObfuscationSettings != null)
+            //{
+            //    this.ObfuscationSettings = null;
                 if (this.CustomAttributes != null && this.CustomAttributes.Count > 0)
                 {
                     for (int iCount = this.CustomAttributes.Count - 1; iCount >= 0; iCount--)
                     {
-                        if (this.CustomAttributes[iCount] is DCILObfuscationAttribute)
+                        if (this.CustomAttributes[iCount] is DCILObfuscationAttribute || this.CustomAttributes[iCount].TypeName.EndsWith(".ESCO") || this.CustomAttributes[iCount].TypeName.EndsWith(".SCFO"))
                         {
                             this.CustomAttributes.RemoveAt(iCount);
                             break;
                         }
                     }
                 }
-            }
+            //}
         }
 
         public int Level = 0;

@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/source/.vs
+/source/bin/Debug/netcoreapp3.1
+/source/obj
+/source/SampleWinApp/obj
+/source/SampleWinApp/SampleWinApp/SampleWinApp/obj
+source/Properties/launchSettings.json
+source/JIEJIENETForCore.Console.csproj.user

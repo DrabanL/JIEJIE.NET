@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Reflection;
-using System.Runtime.Remoting;
-using System.Security;
-using System.Security.Permissions;
 
 #if ! DOTNETCORE
 [assembly: AssemblyTitle("JieJie.NETConsoleApplication")]
