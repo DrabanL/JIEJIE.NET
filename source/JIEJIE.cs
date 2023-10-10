@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Linq;
 
 #if !DOTNETCORE
+using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Protect your .NET software copyright powerfull.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("DCSoft")]
@@ -83,11 +84,11 @@ namespace JIEJIE
         /// <summary>
         /// 类型重命名使用的前缀
         /// </summary>
-        public string PrefixForTypeRename = "_jiejie";
+        public string PrefixForTypeRename = "_g";
         /// <summary>
         /// 类型成员重命名使用的前缀
         /// </summary>
-        public string PrefixForMemberRename = "_jj";
+        public string PrefixForMemberRename = "_h";
         /// <summary>
         /// 要加密的内嵌资源名
         /// </summary>

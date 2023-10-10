@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-#if ! DOTNETCORE
+#if !DOTNETCORE
+using System.Reflection;
 [assembly: AssemblyTitle("JieJie.NETConsoleApplication")]
 
 #endif
