@@ -84,11 +84,11 @@ namespace JIEJIE
         /// <summary>
         /// 类型重命名使用的前缀
         /// </summary>
-        public string PrefixForTypeRename = "_g";
+        public string PrefixForTypeRename;
         /// <summary>
         /// 类型成员重命名使用的前缀
         /// </summary>
-        public string PrefixForMemberRename = "_h";
+        public string PrefixForMemberRename;
         /// <summary>
         /// 要加密的内嵌资源名
         /// </summary>
@@ -2473,11 +2473,11 @@ namespace JIEJIE
             var clses = new List<DCILClass>(this.Document.Classes);
             foreach (var cls in clses)
             {
-                if (cls.Name.Contains("jiejie"))
-                {
-                    Console.WriteLine("Already protected");
-                    Environment.Exit(0);
-                }
+                //if (cls.Name.Contains("PEkpKUOJKy"))
+                //{
+                //    Console.WriteLine("Already protected");
+                //    Environment.Exit(0);
+                //}
 
                 HandleClass(cls);
             }
@@ -3075,11 +3075,11 @@ namespace JIEJIE
         /// <summary>
         /// 重命名类型使用的前缀
         /// </summary>
-        public string PrefixForTypeRename = "_jiejie";
+        public string PrefixForTypeRename;
         /// <summary>
         /// 重名称类型的成员使用的前缀
         /// </summary>
-        public string PrefixForMemberRename = "_jj";
+        public string PrefixForMemberRename;
         /// <summary>
         /// 是否删除临时文件
         /// </summary>
@@ -4067,10 +4067,10 @@ namespace JIEJIE
             {
                 if (cls.Name.EndsWith(".JIEJIEHelper"))
                 {
-                    Console.WriteLine("Already protected");
-                    Environment.Exit(0);
+                    //Console.WriteLine("Already protected");
+                    //Environment.Exit(0);
                 }    
-                if (!cls.HasCustomAttributes || (cls.HasCustomAttributes && cls.CustomAttributes.All(a => !a.TypeName.EndsWith(".ESCO"))))
+                if (!cls.HasCustomAttributes || (cls.HasCustomAttributes && cls.CustomAttributes.All(a => !a.TypeName.EndsWith("ESCO"))))
                 {
                     cls.RenameState = DCILRenameState.Preserve;
                     foreach (var item in cls.ChildNodes)
@@ -4983,6 +4983,9 @@ namespace JIEJIE
                typeof(System.Drawing.Bitmap).Assembly.GetName().Name);
             foreach (var cls in this.Document.Classes)
             {
+                if (cls.HasCustomAttributes && cls.CustomAttributes.Any(a => a.TypeName.EndsWith("SRP")))
+                    continue;
+
                 if (cls.IsResoucePackage() == false)
                 {
                     continue;
@@ -12985,7 +12988,7 @@ namespace JIEJIE
             {
                 foreach (var item in cls.ChildNodes)
                 {
-                    if (excludeCFA && item.HasCustomAttributes && item.CustomAttributes.Any(a => a.TypeName.EndsWith(".SCFO")))
+                    if (excludeCFA && item.HasCustomAttributes && item.CustomAttributes.Any(a => a.TypeName.EndsWith("SCFO")))
                         continue;
 
                     if (item is DCILMethod)
@@ -18755,7 +18758,7 @@ namespace JIEJIE
                 {
                     for (int iCount = this.CustomAttributes.Count - 1; iCount >= 0; iCount--)
                     {
-                        if (this.CustomAttributes[iCount] is DCILObfuscationAttribute || this.CustomAttributes[iCount].TypeName.EndsWith(".ESCO") || this.CustomAttributes[iCount].TypeName.EndsWith(".SCFO"))
+                        if (this.CustomAttributes[iCount] is DCILObfuscationAttribute || this.CustomAttributes[iCount].TypeName.EndsWith("ESCO") || this.CustomAttributes[iCount].TypeName.EndsWith("SCFO") || this.CustomAttributes[iCount].TypeName.EndsWith("SRP"))
                         {
                             this.CustomAttributes.RemoveAt(iCount);
                             break;
