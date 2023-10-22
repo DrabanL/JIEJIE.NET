@@ -565,8 +565,11 @@ namespace JIEJIE
         {
             get
             {
+#if DOTNETCORE
                 return false;
+#else
                 return this.GetType() == typeof(MyConsole);
+#endif
             }
         }
         /// <summary>
@@ -1104,7 +1107,7 @@ namespace JIEJIE
             MyConsole.SetInstance(instance);
         }
          
-#if ! DOTNETCORE
+#if !DOTNETCORE
         public void BindCurrentDomain_AssemblyResolve()
         {
             System.AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;

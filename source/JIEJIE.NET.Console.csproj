@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>JIEJIE</RootNamespace>
     <AssemblyName>JIEJIE.NET.Console</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
